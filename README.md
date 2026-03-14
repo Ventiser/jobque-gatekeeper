@@ -19,48 +19,50 @@ GRC-P             → Governance architecture
 RGIS              → Runtime interoperability protocol
 GovenAI Registry  → Registry authority implementation
 JobQue Gatekeeper → Gatekeeper enforcement implementation
+```
 
-GRC-P defines the governance architecture.
+- **GRC-P** defines the governance architecture.
+- **RGIS** defines the runtime protocol between registry and gatekeeper.
+- **GovenAI Registry** provides governance authority state.
+- **JobQue Gatekeeper** enforces runtime decisions before execution.
 
-RGIS defines the runtime protocol between registry and gatekeeper.
+---
 
-GovenAI Registry provides governance authority state.
-
-JobQue Gatekeeper enforces runtime decisions before execution.
-
-Responsibilities
+## Responsibilities
 
 The gatekeeper is responsible for:
 
-intercepting operational requests
+- intercepting operational requests
+- canonicalizing request structure
+- verifying identity and signatures
+- validating replay protection
+- consulting registry authority via RGIS
+- issuing deterministic **PERMIT / DENY** decisions
+- recording tamper-evident enforcement evidence
 
-canonicalizing request structure
+Gatekeepers MUST enforce **fail-closed semantics**.
 
-verifying identity and signatures
+If governance state cannot be verified, the request MUST be denied.
 
-validating replay protection
+---
 
-consulting registry authority via RGIS
+## Relationship to GRC-P and RGIS
 
-issuing deterministic PERMIT / DENY decisions
+JobQue Gatekeeper implements the **runtime enforcement role defined by GRC-P**.
 
-recording tamper-evident enforcement evidence
-
-Relationship to GRC-P and RGIS
-
-JobQue Gatekeeper implements the runtime enforcement role defined by GRC-P.
-
-It consumes authority state from registry implementations via RGIS.
+It consumes authority state from registry implementations via **RGIS**.
 
 Repositories:
 
-GRC-P: https://github.com/Ventiser/grc-p
+- GRC-P: https://github.com/Ventiser/grc-p  
+- RGIS: https://github.com/Ventiser/rgis  
+- GovenAI Registry: https://github.com/Ventiser/govenai-registry  
 
-RGIS: https://github.com/Ventiser/rgis
+---
 
-GovenAI Registry: https://github.com/Ventiser/govenai-registry
+## Repository Structure
 
-Repository Structure
+```text
 architecture/         gatekeeper enforcement model
 runtime/              runtime request evaluation flow
 identity/             actor identity and nonce handling
@@ -68,23 +70,67 @@ decisions/            permit/deny decision model
 evidence/             enforcement evidence ledger
 registry-integration/ RGIS registry consultation notes
 conformance/          gatekeeper implementation notes
-Status
+```
 
-Draft publication of the JobQue Gatekeeper v1.0 reference implementation model.
+---
+
+## Status
+
+Draft publication of the **JobQue Gatekeeper v1.0** reference implementation model.
+
+---
+
+## Architecture Diagram
+
+```text
+            Request Originator
+(AI Agent / Application / Human Event / System Trigger)
+                     │
+                     ▼
+                   GRC-P
+    Governance Runtime Control Protocol
+            (Architecture Standard)
+                     │
+                     ▼
+                   RGIS
+   Registry–Gatekeeper Interface Protocol
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+        ▼                         ▼
+  GovenAI Registry         JobQue Gatekeeper
+Authority Implementation   Enforcement Implementation
+        │                         │
+        └────────────┬────────────┘
+                     ▼
+       Governance Enforcement Boundary
+                     │
+                     ▼
+           Operational Execution
+             (APIs / Systems)
+```
+
+The architecture is **domain-agnostic** and establishes a **governance enforcement boundary** in front of operational APIs and systems.
+
+Any execution surface placed behind this boundary becomes a **governed execution environment**.
+
+---
 
 ## Related Repositories
 
 GRC-P — Governance architecture  
-https://github.com/Ventiser/grc-p
+https://github.com/Ventiser/grc-p  
 
 RGIS — Registry–Gatekeeper protocol  
-https://github.com/Ventiser/rgis
+https://github.com/Ventiser/rgis  
 
 GovenAI Registry — reference registry authority implementation  
-https://github.com/Ventiser/govenai-registry
+https://github.com/Ventiser/govenai-registry  
 
 JobQue Gatekeeper — reference runtime enforcement implementation  
-https://github.com/Ventiser/jobque-gatekeeper
+https://github.com/Ventiser/jobque-gatekeeper  
+
+---
 
 ## Stewardship
 
